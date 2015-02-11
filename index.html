@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <!--<script src="js/bootstrap.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular.js"></script>
+    <script src="js/lodash.min.js"></script>
+</head>
+<body ng-app="swiftApp">
+<div class="container" ng-controller="SwiftController as main" ng-init="mockup()">
+    <div class="row">
+        <div class="col-md-6">
+            <p>Paste JSON here</p>
+            <textarea id="source" rows="30" cols="50" ng-model="source">
+				
+            </textarea>
+
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-default" ng-click="parse()">Parse</button>
+            <p>Response:</p>
+            <div><pre>{{main.generated}}</pre> </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+<script>
+
+
+</script>
+<script src="js/swiftify.js"></script>
+
+</body>
+</html>
