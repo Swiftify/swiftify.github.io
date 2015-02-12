@@ -15,6 +15,10 @@ ScalarField.prototype.swiftDeclaration = function() {
 	return "var " + this.name + ":" + this.type;
 };
 
+ScalarField.prototype.unmarshallingCode = function(source) {
+    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
+};
+
 function ObjectField(name, value) {
     this.type = _.capitalize(name);
     this.name = _.camelCase(name);
@@ -26,24 +30,86 @@ ObjectField.prototype.swiftDeclaration = function() {
     return "var " + this.name + ":" + this.type;
 };
 
+function ArrayField(name, value) {
+    this.type = null;
+    this.name = _.camelCase(name);
+    this.jsonField = name;
+    this.analyze(value);
+}
+
+function isPrimitive(value) {
+    return _.includes(["string", "number", "boolean"], typeof value);
+}
+
+function singularize(word) {
+    if (_.endsWith(word, 'ies')) {
+        return word.slice(0,-3) + 'y';
+    } else if (_.endsWith(word, 'ues')) {
+        return word.slice(0, -1);
+    } else if (_.endsWith(word, 'es')) {
+        return word.slice(0, -2);
+    } else if (_.endsWith(word, 's')) {
+        return word.slice(0, -1);
+    } else {
+        return "A" + word;
+    }
+}
+
+ArrayField.prototype.analyze = function(value) {
+    // array must be homogenous
+    var firstType = typeof(value[0]);
+    var oki = _.all(value, function(v) { return typeof v === firstType });
+    if (!oki) {
+        return;
+    }
+    if (isPrimitive(value[0])) {
+        console.log('Array of ', firstType);
+        this.type = swiftType(value[0]);
+        return;
+    }
+    // Array of objects.
+    var specimen = _.merge.apply(this, value);
+    this.type = singularize(_.capitalize(this.name));
+    var of = new ObjectField(this.type, specimen);
+};
+
+ArrayField.prototype.swiftDeclaration = function() {
+    //return "var " + this.name + ":" + this.type;
+    if (this.type) {
+        return "var " + this.name + ": [" + this.type + "]";
+    } else {
+        return "// Unparsed array: " + this.name;
+    }
+};
+
+function swiftType(value) {
+    switch (typeof value) {
+        case "string":
+            return "String";
+        case "boolean":
+            return "Bool";
+        case "number":
+            if (value % 1 === 0) {
+                return "Int";
+            } else {
+                return "Double";
+            }
+        default:
+            return "Any";
+    }
+}
+
 ObjectField.prototype.parseChildren = function(obj) {
     var children = {};
-
     _.forOwn(obj, function(value, key) {
-
-        if (typeof value === "string") {
-            children[key] = new ScalarField(key, "String");
-        } else if (typeof value === "number") {
-            children[key] = new ScalarField(key, "Int");
-        } else if (typeof value === "boolean") {
-            children[key] = new ScalarField(key, "Bool");
+        if (isPrimitive(value)) {
+            children[key] = new ScalarField(key, swiftType(value));
         } else if (_.isArray(value)) {
-            children[key] = new ScalarField(key, "[AnyObject]");
+            children[key] = new ArrayField(key, value);
         } else if (_.isObject(value)) {
             children[key] = new ObjectField(key, value);
         }
     });
-
     types.push(this);
     return children;
 };
@@ -74,6 +140,7 @@ app.controller("SwiftController", function($scope) {
                 "lastName":"Doe",
                 "id":8899127876
             },
+            "tags" : [ "Important", "Urgent" ],
 			"issues": [
 				{
 					"expand": "html",
@@ -127,7 +194,7 @@ app.controller("SwiftController", function($scope) {
 
     var s = "";
     types.forEach(function(t) {
-        s += "// Klazz\n"
+        s += "// " + t.type + "\n"
         s += t.swiftCode();
         s += "\n\n";
     });
