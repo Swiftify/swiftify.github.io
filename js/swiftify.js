@@ -6,17 +6,17 @@ var app = angular.module('swiftApp', []);
 var types = [];
 
 function ScalarField(name, type) {
-	this.name = name;
-	this.type = type;
-	this.jsonField = name;
+    this.name = name;
+    this.type = type;
+    this.jsonField = name;
 }
 
-ScalarField.prototype.swiftDeclaration = function() {
-	return "var " + this.name + ":" + this.type;
+ScalarField.prototype.swiftDeclaration = function () {
+    return "var " + this.name + ":" + this.type;
 };
 
-ScalarField.prototype.unmarshallingCode = function(source) {
-    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
+ScalarField.prototype.unmarshallingCode = function (source) {
+    return "  this." + this.name + " = " + source + '["' + this.jsonField + '"].' + this.type;
 };
 
 function ObjectField(name, value) {
@@ -26,9 +26,15 @@ function ObjectField(name, value) {
     this.children = this.parseChildren(value);
 }
 
-ObjectField.prototype.swiftDeclaration = function() {
+ObjectField.prototype.swiftDeclaration = function () {
     return "var " + this.name + ":" + this.type;
 };
+
+ObjectField.prototype.unmarshallingCode = function (source) {
+//    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
+    return "// Mapping objects not supported yet";
+};
+
 
 function ArrayField(name, value) {
     this.type = null;
@@ -43,7 +49,7 @@ function isPrimitive(value) {
 
 function singularize(word) {
     if (_.endsWith(word, 'ies')) {
-        return word.slice(0,-3) + 'y';
+        return word.slice(0, -3) + 'y';
     } else if (_.endsWith(word, 'ues')) {
         return word.slice(0, -1);
     } else if (_.endsWith(word, 'es')) {
@@ -55,10 +61,12 @@ function singularize(word) {
     }
 }
 
-ArrayField.prototype.analyze = function(value) {
+ArrayField.prototype.analyze = function (value) {
     // array must be homogenous
     var firstType = typeof(value[0]);
-    var oki = _.all(value, function(v) { return typeof v === firstType });
+    var oki = _.all(value, function (v) {
+        return typeof v === firstType
+    });
     if (!oki) {
         return;
     }
@@ -73,7 +81,7 @@ ArrayField.prototype.analyze = function(value) {
     var of = new ObjectField(this.type, specimen);
 };
 
-ArrayField.prototype.swiftDeclaration = function() {
+ArrayField.prototype.swiftDeclaration = function () {
     //return "var " + this.name + ":" + this.type;
     if (this.type) {
         return "var " + this.name + ": [" + this.type + "]";
@@ -81,6 +89,12 @@ ArrayField.prototype.swiftDeclaration = function() {
         return "// Unparsed array: " + this.name;
     }
 };
+
+ArrayField.prototype.unmarshallingCode = function (source) {
+    //return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
+    return "// Arrays not supported yet";
+};
+
 
 function swiftType(value) {
     switch (typeof value) {
@@ -99,9 +113,9 @@ function swiftType(value) {
     }
 }
 
-ObjectField.prototype.parseChildren = function(obj) {
+ObjectField.prototype.parseChildren = function (obj) {
     var children = {};
-    _.forOwn(obj, function(value, key) {
+    _.forOwn(obj, function (value, key) {
         if (isPrimitive(value)) {
             children[key] = new ScalarField(key, swiftType(value));
         } else if (_.isArray(value)) {
@@ -114,87 +128,36 @@ ObjectField.prototype.parseChildren = function(obj) {
     return children;
 };
 
-ObjectField.prototype.swiftCode = function() {
+ObjectField.prototype.swiftCode = function () {
     var s = "class " + this.type + " {\n";
-    _.forOwn(this.children, function(field) {
-       s += "   " + field.swiftDeclaration() + "\n";
+    _.forOwn(this.children, function (field) {
+        s += "   " + field.swiftDeclaration() + "\n";
     });
+
+    s += "\n\n";
+
+    s += "  init(json:JSON) {\n";
+    _.forOwn(this.children, function (field) {
+        s += "   " + field.unmarshallingCode('json') + "\n";
+    });
+    s += "  }\n\n";
+
     s += "}\n";
     return s;
 };
 
-app.controller("SwiftController", function($scope) {
-		var vm = this;
-		//$scope.generated = "foo";
-		vm.generated = "foo";
+app.controller("SwiftController", function ($scope) {
+    var vm = this;
 
-		$scope.mockup = function() {
-		}; 
-		var fixture = {
-			"expand": "schema,names",
-			"startAt": 0,
-			"maxResults": 50,
-			"total": 6,
-            "reporter" : {
-                "firstName":"John",
-                "lastName":"Doe",
-                "id":8899127876
-            },
-            "tags" : [ "Important", "Urgent" ],
-			"issues": [
-				{
-					"expand": "html",
-					"id": "10230",
-					"self": "http://kelpie9:8081/rest/api/2/issue/BULK-62",
-					"key": "BULK-62",
-					"fields": {
-						"summary": "testing",
-						"timetracking": null,
-						"issuetype": {
-							"self": "http://kelpie9:8081/rest/api/2/issuetype/5",
-							"id": "5",
-							"description": "The sub-task of the issue",
-							"iconUrl": "http://kelpie9:8081/images/icons/issue_subtask.gif",
-							"name": "Sub-task",
-							"subtask": true
-						},
-						"customfield_10071": null
-					},
-					"transitions": "http://kelpie9:8081/rest/api/2/issue/BULK-62/transitions"
-				},
-
-			
-			{
-				"expand": "html",
-				"id": "10004",
-				"self": "http://kelpie9:8081/rest/api/2/issue/BULK-47",
-				"key": "BULK-47",
-				"fields": {
-					"summary": "Cheese v1 2.0 issue",
-					"timetracking": null,
-					"issuetype": {
-						"self": "http://kelpie9:8081/rest/api/2/issuetype/3",
-						"id": "3",
-						"description": "A task that needs to be done.",
-						"iconUrl": "http://kelpie9:8081/images/icons/task.gif",
-						"name": "Task",
-						"subtask": false
-					},
-					"transitions": "http://kelpie9:8081/rest/api/2/issue/BULK-47/transitions"
-				}
-			}
-			]
-		}
-		;
-		$scope.source = JSON.stringify(fixture);
+    $scope.source = JSON.stringify(testFixture);
 
     var obj = JSON.parse($scope.source);
     var of = new ObjectField("MyClass", obj);
     //vm.generated = of.swiftCode();
 
     var s = "";
-    types.forEach(function(t) {
-        s += "// " + t.type + "\n"
+    types.forEach(function (t) {
+        s += "// " + t.type + "\n";
         s += t.swiftCode();
         s += "\n\n";
     });
@@ -203,17 +166,17 @@ app.controller("SwiftController", function($scope) {
 
 //};
 
-$scope.parse = function() {
-	vm.generated = new Date();
+    $scope.parse = function () {
+        vm.generated = new Date();
 
-	var obj = JSON.parse($scope.source);
-	console.log(obj);
-	//vm.generated = generateSource(obj);
+        var obj = JSON.parse($scope.source);
+        console.log(obj);
+        //vm.generated = generateSource(obj);
 
 
-    var of = new ObjectField("MyClass", obj);
-    vm.generated = of.swiftCode();
+        var of = new ObjectField("MyClass", obj);
+        vm.generated = of.swiftCode();
 
-}
+    }
 
 });
