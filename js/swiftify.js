@@ -5,6 +5,28 @@ var app = angular.module('swiftApp', []);
 
 var types = [];
 
+function indent(num) {
+    var repeat = num || 1;
+    return _.repeat('  ', repeat);
+}
+
+function typeConversion(swiftType) {
+    switch (swiftType) {
+        case 'String':
+            return 'string';
+        case 'Int':
+            return 'int';
+        case 'Double':
+            return 'number';
+        case 'Bool':
+            return 'bool';
+        case 'AnyObject':
+            return 'object';
+        default:
+            return 'object';
+    }
+}
+
 function ScalarField(name, type) {
     this.name = name;
     this.type = type;
@@ -16,7 +38,7 @@ ScalarField.prototype.swiftDeclaration = function () {
 };
 
 ScalarField.prototype.unmarshallingCode = function (source) {
-    return "  this." + this.name + " = " + source + '["' + this.jsonField + '"].' + this.type;
+    return "  this." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
 };
 
 function ObjectField(name, value) {
@@ -32,6 +54,7 @@ ObjectField.prototype.swiftDeclaration = function () {
 
 ObjectField.prototype.unmarshallingCode = function (source) {
 //    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
+    return "  this." + this.name + " = " + this.type + "(" + source + '["' + this.jsonField + '"])';
     return "// Mapping objects not supported yet";
 };
 
@@ -62,6 +85,12 @@ function singularize(word) {
 }
 
 ArrayField.prototype.analyze = function (value) {
+    // Corner case - empty array
+    if (value.length == 0) {
+        this.type = 'AnyObject';
+        this.warning = 'Empty array, cannot infer data type';
+        return;
+    }
     // array must be homogenous
     var firstType = typeof(value[0]);
     var oki = _.all(value, function (v) {
@@ -81,6 +110,7 @@ ArrayField.prototype.analyze = function (value) {
     var of = new ObjectField(this.type, specimen);
 };
 
+
 ArrayField.prototype.swiftDeclaration = function () {
     //return "var " + this.name + ":" + this.type;
     if (this.type) {
@@ -91,8 +121,15 @@ ArrayField.prototype.swiftDeclaration = function () {
 };
 
 ArrayField.prototype.unmarshallingCode = function (source) {
-    //return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
-    return "// Arrays not supported yet";
+    //return "  this."+this.name + " = " + this.type + "(" + source + '["' + this.jsonField + '"])' ;
+    var identifier = "this." + this.name;
+    var code = "  " + identifier + " = Array<" + this.type + ">()\n";
+    code += indent() + "for i in " + source + '["' + this.jsonField + '"] {\n';
+    code += indent(2) + identifier + "\n";
+    code += indent() + "}";
+
+    return code;
+    //return "// Arrays not supported yet";
 };
 
 
