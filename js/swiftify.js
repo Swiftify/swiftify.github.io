@@ -53,9 +53,7 @@ ObjectField.prototype.swiftDeclaration = function () {
 };
 
 ObjectField.prototype.unmarshallingCode = function (source) {
-//    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
     return "  self." + this.name + " = " + this.type + "(json: " + source + '["' + this.jsonField + '"])';
-    return "// Mapping objects not supported yet";
 };
 
 
@@ -88,7 +86,6 @@ ArrayField.prototype.analyze = function (value) {
     // Corner case - empty array
     if (value.length == 0) {
         this.type = null;
-        this.warning = 'Empty array, cannot infer data type';
         return;
     }
     // array must be homogenous
@@ -227,8 +224,6 @@ app.controller("SwiftController", function ($scope) {
 
         var of = new ObjectField("MyClass", obj);
         vm.generated = of.swiftCode();
-
-        SelectText(document.getElementById('swiftCode'));
     }
 
 });

@@ -4,27 +4,14 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <style>
+        .swift-code {
+            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+        }
+    </style>
     <!--<script src="js/bootstrap.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular.js"></script>
     <script src="js/lodash.min.js"></script>
-    <script>
-        function SelectText(element) {
-            var doc = document;
-            var text = doc.getElementById(element);
-            if (doc.body.createTextRange) {
-                var range = document.body.createTextRange();
-                range.moveToElementText(text);
-                range.select();
-            } else if (window.getSelection) {
-                var selection = window.getSelection();
-                var range = document.createRange();
-                range.selectNodeContents(text);
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        }
-
-    </script>
 </head>
 <body ng-app="swiftApp">
 <div class="container" ng-controller="SwiftController as main" ng-init="mockup()">
@@ -40,7 +27,7 @@
             <button class="btn btn-default" ng-click="parse()">Parse</button>
             <p>Response:</p>
             <!--<div id="swiftCode"><pre >{{main.generated}}</pre> </div>-->
-            <textarea ng-model="main.generated" cols="50" rows="50"></textarea>
+            <textarea class="swift-code" ng-model="main.generated" cols="50" rows="50"></textarea>
         </div>
 
 
