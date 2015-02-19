@@ -5,7 +5,7 @@ var app = angular.module('swiftApp', []);
 
 var types = [];
 
-function indent(num) {
+function spaces(num) {
     var repeat = num || 1;
     return _.repeat('  ', repeat);
 }
@@ -17,7 +17,7 @@ function typeConversion(swiftType) {
         case 'Int':
             return 'int';
         case 'Double':
-            return 'number';
+            return 'number?.doubleValue';
         case 'Bool':
             return 'bool';
         case 'AnyObject':
@@ -34,11 +34,11 @@ function ScalarField(name, type) {
 }
 
 ScalarField.prototype.swiftDeclaration = function () {
-    return "var " + this.name + ":" + this.type;
+    return "var " + this.name + ":" + this.type + '?';
 };
 
 ScalarField.prototype.unmarshallingCode = function (source) {
-    return "  this." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
+    return "  self." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
 };
 
 function ObjectField(name, value) {
@@ -49,12 +49,12 @@ function ObjectField(name, value) {
 }
 
 ObjectField.prototype.swiftDeclaration = function () {
-    return "var " + this.name + ":" + this.type;
+    return "var " + this.name + ":" + this.type + '?';
 };
 
 ObjectField.prototype.unmarshallingCode = function (source) {
 //    return "  this."+this.name + " = " + source + '["' + this.jsonField + '"].' + type
-    return "  this." + this.name + " = " + this.type + "(" + source + '["' + this.jsonField + '"])';
+    return "  self." + this.name + " = " + this.type + "(json: " + source + '["' + this.jsonField + '"])';
     return "// Mapping objects not supported yet";
 };
 
@@ -87,7 +87,7 @@ function singularize(word) {
 ArrayField.prototype.analyze = function (value) {
     // Corner case - empty array
     if (value.length == 0) {
-        this.type = 'AnyObject';
+        this.type = null;
         this.warning = 'Empty array, cannot infer data type';
         return;
     }
@@ -99,7 +99,8 @@ ArrayField.prototype.analyze = function (value) {
     if (!oki) {
         return;
     }
-    if (isPrimitive(value[0])) {
+    this.primitive = isPrimitive(value[0]);
+    if (this.primitive) {
         console.log('Array of ', firstType);
         this.type = swiftType(value[0]);
         return;
@@ -112,24 +113,37 @@ ArrayField.prototype.analyze = function (value) {
 
 
 ArrayField.prototype.swiftDeclaration = function () {
-    //return "var " + this.name + ":" + this.type;
     if (this.type) {
-        return "var " + this.name + ": [" + this.type + "]";
+        return "var " + this.name + ": [" + this.type + "]" + " = Array<" + this.type + ">()\n";
     } else {
         return "// Unparsed array: " + this.name;
     }
 };
 
-ArrayField.prototype.unmarshallingCode = function (source) {
-    //return "  this."+this.name + " = " + this.type + "(" + source + '["' + this.jsonField + '"])' ;
-    var identifier = "this." + this.name;
-    var code = "  " + identifier + " = Array<" + this.type + ">()\n";
-    code += indent() + "for i in " + source + '["' + this.jsonField + '"] {\n';
-    code += indent(2) + identifier + "\n";
-    code += indent() + "}";
+ArrayField.prototype.arrayElementExpression = function () {
+    if (this.primitive) {
+        return "i.1." + typeConversion(this.type);    // TODO optional?
+    } else {
+        return this.type + "(json: i.1)";
+    }
+};
 
-    return code;
-    //return "// Arrays not supported yet";
+ArrayField.prototype.unmarshallingCode = function (source) {
+    if (this.type) {
+        var identifier = "self." + this.name;
+        var code = spaces() + "for i in " + source + '["' + this.jsonField + '"] {\n';
+        if (this.primitive) {
+            code += spaces(2) + "if let e = " + this.arrayElementExpression() + " {\n";
+            code += spaces(4) + identifier + ".append(e)" + "\n";
+            code += spaces(2) + "}\n"
+        } else {
+            code += spaces(4) + identifier + ".append(" + this.arrayElementExpression() + ")" + "\n";
+        }
+        code += spaces() + "}\n";
+        return code;
+    } else {
+        return "// Skipped " + this.name + " because of empty array"
+    }
 };
 
 
@@ -214,6 +228,7 @@ app.controller("SwiftController", function ($scope) {
         var of = new ObjectField("MyClass", obj);
         vm.generated = of.swiftCode();
 
+        SelectText(document.getElementById('swiftCode'));
     }
 
 });
