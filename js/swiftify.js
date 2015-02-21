@@ -1,7 +1,12 @@
 /**
  * Created by tomek on 08/02/15.
  */
-var app = angular.module('swiftApp', []);
+var app = angular.module('swiftApp', ['ngRoute']);
+
+var reservedSwiftWords = ["class", "deinit", "enum", "extension", "func", "import", "init", "internal", "let", "operator", "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var",
+    "break", "case", "continue", "default", "do", "else", "fallthrough", "for", "if", "in", "return", "switch", "where", "while",
+    "as", "dynamicType", "false", "is", "nil", "self", "Self", "super", "true",
+    "associativity", "convenience", "dynamic", "didSet", "final", "get", "infix", "inout", "lazy", "left", "mutating", "none", "nonmutating", "optional", "override", "postfix", "precedence", "prefix", "Protocol", "required", "right", "set", "Type", "unowned", "weak", "willSet"];
 
 var types = [];
 
@@ -194,10 +199,16 @@ ObjectField.prototype.swiftCode = function () {
     return s;
 };
 
+app.config(function($routeProvider) {
+});
+
 app.controller("SwiftController", function ($scope) {
     var vm = this;
 
     $scope.source = JSON.stringify(testFixture);
+    $scope.classNamePrefix = "";
+
+    $scope.current = "json";
 
     var obj = JSON.parse($scope.source);
     var of = new ObjectField("MyClass", obj);
@@ -224,6 +235,19 @@ app.controller("SwiftController", function ($scope) {
 
         var of = new ObjectField("MyClass", obj);
         vm.generated = of.swiftCode();
-    }
+    };
+
+    $scope.showJson = function() {
+        console.log('Clicked json');
+        $scope.current = "json";
+    };
+
+    $scope.showCode = function() {
+        console.log('clicked Code');
+        $scope.current = "code";
+
+    };
+
+
 
 });

@@ -8,33 +8,78 @@
         .swift-code {
             font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
         }
+
+        .codebin {
+            width: 100%;
+        }
+
+        .vspace1 {
+            margin-top: 1em;
+        }
     </style>
-    <!--<script src="js/bootstrap.js"></script>-->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.12/angular.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="js/lodash.min.js"></script>
+
 </head>
-<body ng-app="swiftApp">
-<div class="container" ng-controller="SwiftController as main" ng-init="mockup()">
+<body ng-app="swiftApp" ng-controller="SwiftController as main" ng-init="mockup()">
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Swiftify</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li ng-class="current=='json'?'active':''"><a href="" ng-click="showJson()">JSON</a></li>
+                <li ng-class="current=='code'?'active':''"><a href="" ng-click="showCode()">Generated code</a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+
+<div class="container" ng-show="current=='json'">
     <div class="row">
-        <div class="col-md-6">
-            <p>Paste JSON here</p>
-            <textarea id="source" rows="30" cols="50" ng-model="source">
-				
+        <div class="col-md-12">
+            <div>Paste JSON here
+                <button class="btn">Example</button>
+            </div>
+            <div class="vspace1">
+            <textarea id="source" class="codebin" rows="30" cols="50" ng-model="source">
             </textarea>
 
+            </div>
         </div>
-        <div class="col-md-6">
+
+    </div>
+</div>
+<div class="container" ng-show="current==='code'">
+    <div class="row">
+        <dvi class="col-md-3">
+            Options
+        </dvi>
+        <div class="col-md-9">
             <button class="btn btn-default" ng-click="parse()">Parse</button>
             <p>Response:</p>
             <!--<div id="swiftCode"><pre >{{main.generated}}</pre> </div>-->
             <textarea class="swift-code" ng-model="main.generated" cols="50" rows="50"></textarea>
         </div>
 
-
     </div>
 
-
 </div>
+
+
 <script>
 
 
