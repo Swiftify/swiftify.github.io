@@ -1,7 +1,10 @@
 /**
  * Created by tomek on 08/02/15.
  */
-var app = angular.module('swiftApp', ['ngRoute']);
+
+function JsonAnalyzer() {
+    this.foo = "bar";
+}
 
 var reservedSwiftWords = ["class", "deinit", "enum", "extension", "func", "import", "init", "internal", "let", "operator", "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var",
     "break", "case", "continue", "default", "do", "else", "fallthrough", "for", "if", "in", "return", "switch", "where", "while",
@@ -199,55 +202,3 @@ ObjectField.prototype.swiftCode = function () {
     return s;
 };
 
-app.config(function($routeProvider) {
-});
-
-app.controller("SwiftController", function ($scope) {
-    var vm = this;
-
-    $scope.source = JSON.stringify(testFixture);
-    $scope.classNamePrefix = "";
-
-    $scope.current = "json";
-
-    var obj = JSON.parse($scope.source);
-    var of = new ObjectField("MyClass", obj);
-    //vm.generated = of.swiftCode();
-
-    var s = "";
-    types.forEach(function (t) {
-        s += "// " + t.type + "\n";
-        s += t.swiftCode();
-        s += "\n\n";
-    });
-
-    vm.generated = s;
-
-//};
-
-    $scope.parse = function () {
-        vm.generated = new Date();
-
-        var obj = JSON.parse($scope.source);
-        console.log(obj);
-        //vm.generated = generateSource(obj);
-
-
-        var of = new ObjectField("MyClass", obj);
-        vm.generated = of.swiftCode();
-    };
-
-    $scope.showJson = function() {
-        console.log('Clicked json');
-        $scope.current = "json";
-    };
-
-    $scope.showCode = function() {
-        console.log('clicked Code');
-        $scope.current = "code";
-
-    };
-
-
-
-});
