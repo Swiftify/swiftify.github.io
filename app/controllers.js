@@ -39,17 +39,10 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
 
 
 app.controller("SwiftController", function ($scope, jsonAnalyzer) {
-    var vm = this;
-
     $scope.data = {
         json: "{}",
-        rootClass: "MyClass"
+        rootClass: "MyClass",
+        prefix: ""
     };
-
-    //$scope.source = JSON.stringify({});
-
-    $scope.classNamePrefix = "";
-
-
 
 });
