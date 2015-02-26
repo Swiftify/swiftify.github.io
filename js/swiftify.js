@@ -52,7 +52,7 @@ ScalarField.prototype.swiftDeclaration = function () {
 };
 
 ScalarField.prototype.unmarshallingCode = function (source) {
-    return "  self." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
+    return spaces() + "self." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
 };
 
 function ObjectField(name, value) {
@@ -67,7 +67,7 @@ ObjectField.prototype.swiftDeclaration = function () {
 };
 
 ObjectField.prototype.unmarshallingCode = function (source) {
-    return "  self." + this.name + " = " + this.type + "(json: " + source + '["' + this.jsonField + '"])';
+    return spaces() + "self." + this.name + " = " + this.type + "(json: " + source + '["' + this.jsonField + '"])';
 };
 
 
@@ -193,16 +193,16 @@ ObjectField.prototype.parseChildren = function (obj) {
 ObjectField.prototype.swiftCode = function () {
     var s = "class " + this.type + " {\n";
     _.forOwn(this.children, function (field) {
-        s += "   " + field.swiftDeclaration() + "\n";
+        s += spaces() + field.swiftDeclaration() + "\n";
     });
 
     s += "\n\n";
 
-    s += "  init(json:JSON) {\n";
+    s += spaces() + "init(json:JSON) {\n";
     _.forOwn(this.children, function (field) {
-        s += "   " + field.unmarshallingCode('json') + "\n";
+        s += spaces() + field.unmarshallingCode('json') + "\n";
     });
-    s += "  }\n\n";
+    s += spaces() + "}\n\n";
 
     s += "}\n";
     return s;
