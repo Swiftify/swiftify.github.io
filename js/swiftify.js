@@ -3,7 +3,13 @@
  */
 
 function JsonAnalyzer() {
+    console.log('Creating JSONanalyzer');
     this.foo = "bar";
+
+    this.source = '';
+
+
+
 }
 
 var reservedSwiftWords = ["class", "deinit", "enum", "extension", "func", "import", "init", "internal", "let", "operator", "private", "protocol", "public", "static", "struct", "subscript", "typealias", "var",

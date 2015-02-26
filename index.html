@@ -4,19 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="css/bootstrap.css">
-    <style>
-        .swift-code {
-            font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-        }
-
-        .codebin {
-            width: 100%;
-        }
-
-        .vspace1 {
-            margin-top: 1em;
-        }
-    </style>
+    <link rel="stylesheet" href="css/swiftify.css">
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="js/lodash.min.js"></script>
@@ -39,50 +27,17 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li ng-class="current=='json'?'active':''"><a href="" ng-click="showJson()">JSON</a></li>
-                <li ng-class="current=='code'?'active':''"><a href="" ng-click="showCode()">Generated code</a></li>
+                <li><a href="#/json">JSON</a></li>
+                <li><a href="#/code">Generated code</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
     </div>
 </nav>
 
-
-<div class="container" ng-show="current=='json'">
-    <div class="row">
-        <div class="col-md-12">
-            <div>Paste JSON here
-                <button class="btn">Example</button>
-            </div>
-            <div class="vspace1">
-            <textarea id="source" class="codebin" rows="30" cols="50" ng-model="source"></textarea>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-<div class="container" ng-show="current==='code'">
-    <div class="row">
-        <dvi class="col-md-3">
-            Options
-        </dvi>
-        <div class="col-md-9">
-            <button class="btn btn-default" ng-click="parse()">Parse</button>
-            <p>Response:</p>
-            <!--<div id="swiftCode"><pre >{{main.generated}}</pre> </div>-->
-            <textarea class="swift-code" ng-model="main.generated" cols="50" rows="50"></textarea>
-        </div>
-
-    </div>
-
-</div>
+<div class="container" ng-view></div>
 
 
-<script>
-
-
-</script>
 <script src="js/fixture.js"></script>
 <script src="js/swiftify.js"></script>
 <script src="app/app.js"></script>
