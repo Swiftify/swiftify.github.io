@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<div class="jumbotron">
+    <h1>Swiftify</h1>
+    <p>Generate Swift model classes from example JSON data.</p>
+</div>
+
+<p>With Swiftify you can pick any JSON payload from web service you want to interact with, and generate Swift model classes.
+This tool has been inspired by <a href="https://itunes.apple.com/us/app/objectify/id435651677?mt=12">Objectify</a> app, whose development has stopped)</p>
+<p>Initialize objects with <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>'s <code>JSON</code> object.</p>
+
+<h2>Features</h2>
+
+<ul>
+    <li>Generates classes for nested objects.</li>
+    <li>Infer numeric data type from example, <code>Double</code> or <code>Int</code>, depending on number has fractional part, or not.</li>
+    <li>Generates type-safe Swift arrays of nested objects or primitive types.</li>
+    <li>Uses <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a> for reading JSON. Other parsers may be supported in future.</li>
+</ul>
+
+<h2>Usage</h2>
+
+<ol>
+    <li>Go to <b>JSON</b> tab, and paste valid JSON object.</li>
+    <li>Go to <b>Generated Code</b> and copy-paste classes to your project.</li>
+</ol>
+
+<h2>TODOs</h2>
+<ul>
+    <li>Support array as top level JSON object.</li>
+    <li>Customize mapping during generation.</li>
+</ul>
+
+</body>
+</html>

@@ -7,6 +7,9 @@ app.config(function($routeProvider) {
     console.log('Setting routes');
 
     $routeProvider.
+        when('/', {
+            templateUrl: 'partials/about.html'
+        }).
         when('/json', {
             templateUrl: 'partials/json.html',
             controller: 'JsonController'
@@ -16,7 +19,7 @@ app.config(function($routeProvider) {
             controller: 'CodeController'
         }).
         otherwise({
-            redirectTo: '/json'
+            redirectTo: '/'
         });
 
 
