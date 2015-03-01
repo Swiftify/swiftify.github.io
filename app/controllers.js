@@ -16,11 +16,13 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
 
 
     function buildSwiftCode() {
-        types = [];
         var obj = JSON.parse($scope.data.json);
-        var of = new ObjectField($scope.data.rootClass, obj);
+
+        var output = jsonAnalyzer.parse(obj, $scope.data);
+
+        //var of = new ObjectField($scope.data.rootClass, obj);
         var s = "";
-        types.forEach(function (t) {
+        output.forEach(function (t) {
             s += "// " + t.type + "\n";
             s += t.swiftCode();
             s += "\n\n";
@@ -33,6 +35,9 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
         buildSwiftCode();
     });
 
+    $scope.$watch('data.prefix', function(val) {
+        buildSwiftCode();
+    });
 
 });
 
