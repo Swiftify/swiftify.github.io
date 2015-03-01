@@ -2,12 +2,31 @@
     <div class="col-md-3">
         <h4>Options</h4>
 
-        <form class="form-group">
-            <label for="rootClass">Root class name</label>
-            <input id="rootClass" type="text" class="form-control" value="MyClass" ng-model="data.rootClass">
+        <form>
+            <div class="form-group">
+                <label for="rootClass">Root class name</label>
+                <input id="rootClass" type="text" class="form-control" value="MyClass" ng-model="data.rootClass">
+            </div>
 
-            <label for="prefix">Class name prefix</label>
-            <input id="prefix" type="text" class="form-control" value="MyClass" ng-model="data.prefix">
+            <div class="form-group">
+                <label for="prefix">Class name prefix</label>
+                <input id="prefix" type="text" class="form-control" value="MyClass" ng-model="data.prefix">
+            </div>
+
+
+            <div class="radio">
+                <label>
+                    <input type="radio" name="decodeWhere" id="decodeWhere1" value="init" ng-model="data.decodeIn">
+                    Deserialize in initializer
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="decodeWhere" id="decodeWhere2" value="method" ng-model="data.decodeIn">
+                    Deserialize in custom method
+                    <input type="text" id="decodeMethod" ng-model="data.decodeMethodName" placeholder="Method name" ng-show="data.decodeIn=='method'">
+                </label>
+            </div>
 
         </form>
 

@@ -7,7 +7,11 @@ app.controller("JsonController", function ($scope, jsonAnalyzer) {
 
     $scope.example = function() {
         $scope.data.json = JSON.stringify(testFixture);
-    }
+    };
+
+    $scope.simpleExample = function() {
+        $scope.data.json = JSON.stringify({ name: "Tomek", id:12345, location: { lat:-19.20, lon:51.40 } });
+    };
 });
 
 
@@ -31,13 +35,26 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
     }
     buildSwiftCode();
 
-    $scope.$watch('data.rootClass', function(val) {
+    //$scope.$watch('data.rootClass', function(val) {
+    //    buildSwiftCode();
+    //});
+    //
+    //$scope.$watch('data.prefix', function(val) {
+    //    buildSwiftCode();
+    //});
+    //
+    //$scope.$watch('data.decodeIn', function(val) {
+    //    buildSwiftCode();
+    //});
+    //
+    //$scope.$watch('data.decodeMethodName', function(val) {
+    //    buildSwiftCode();
+    //});
+
+    $scope.$watch('[data.rootClass, data.prefix, data.decodeIn, data.decodeMethodName]', function(val) {
         buildSwiftCode();
     });
 
-    $scope.$watch('data.prefix', function(val) {
-        buildSwiftCode();
-    });
 
 });
 
@@ -47,7 +64,9 @@ app.controller("SwiftController", function ($scope, jsonAnalyzer) {
     $scope.data = {
         json: "{}",
         rootClass: "MyClass",
-        prefix: ""
+        prefix: "",
+        decodeIn: "init",
+        decodeMethodName: "decode"
     };
 
 });

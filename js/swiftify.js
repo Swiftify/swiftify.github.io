@@ -56,7 +56,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         return spaces() + "self." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
     };
 
-    ObjectField = function(name, value) {
+    ObjectField = function (name, value) {
         this.type = config.prefix + _.capitalize(name);
         this.name = _.camelCase(name);
         this.jsonField = name;
@@ -64,11 +64,21 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
     };
 
     ObjectField.prototype.swiftDeclaration = function () {
-        return "var " + this.name + ":" + this.type + '?';
+        if (decoderInInitializer()) {
+            return "var " + this.name + ":" + this.type + '?';
+        } else {
+            return "var " + this.name + ":" + this.type + ' = ' + this.type + '()'
+        }
     };
 
     ObjectField.prototype.unmarshallingCode = function (source) {
-        return spaces() + "self." + this.name + " = " + this.type + "(json: " + source + '["' + this.jsonField + '"])';
+        var sourceVariable = source + '["' + this.jsonField + '"]';
+        var fieldReference = spaces() + "self." + this.name;
+        if (decoderInInitializer()) {
+            return fieldReference + " = " + this.type + "(json: " + sourceVariable + ')';
+        } else {
+            return fieldReference + "." + config.decodeMethodName + '(' + sourceVariable + ')';
+        }
     };
 
 
@@ -191,6 +201,18 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         return children;
     };
 
+    function decoderInInitializer() {
+        return config.decodeIn === "init";
+    }
+
+    function decoderMethodName() {
+        if (decoderInInitializer()) {
+            return "init";
+        } else {
+            return "func " + config.decodeMethodName;
+        }
+    }
+
     ObjectField.prototype.swiftCode = function () {
         var s = "class " + this.type + " {\n";
         _.forOwn(this.children, function (field) {
@@ -199,7 +221,10 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
 
         s += "\n\n";
 
-        s += spaces() + "init(json:JSON) {\n";
+        var methodSignature = decoderMethodName();
+
+
+        s += spaces() + methodSignature + "(json:JSON) {\n";
         _.forOwn(this.children, function (field) {
             s += spaces() + field.unmarshallingCode('json') + "\n";
         });
