@@ -107,6 +107,10 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         }
     }
 
+    function arrayMergingCustomizer(objectValue, sourceValue, key, object, source) {
+        return objectValue || sourceValue || undefined;
+    }
+
     ArrayField.prototype.analyze = function (value) {
         // Corner case - empty array
         if (value.length == 0) {
@@ -128,6 +132,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
             return;
         }
         // Array of objects.
+        value.push(arrayMergingCustomizer);
         var specimen = _.merge.apply(this, value);
         this.type = singularize(_.capitalize(this.name));
         var of = new ObjectField(this.type, specimen);
