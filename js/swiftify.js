@@ -141,7 +141,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
 
     ArrayField.prototype.swiftDeclaration = function () {
         if (this.type) {
-            return "var " + this.name + ": [" + this.type + "]" + " = Array<" + this.type + ">()\n";
+            return "var " + this.name + ": [" + config.prefix + this.type + "]" + " = Array<" + config.prefix + this.type + ">()\n";
         } else {
             return "// Unparsed array: " + this.name;
         }
@@ -151,7 +151,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         if (this.primitive) {
             return "i.1." + typeConversion(this.type);    // TODO optional?
         } else {
-            return this.type + "(json: i.1)";
+            return config.prefix + this.type + "(json: i.1)";
         }
     };
 
