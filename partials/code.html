@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <h4>Options</h4>
 
         <form>
@@ -30,9 +30,21 @@
 
         </form>
 
+        <h4>Fine tuning</h4>
+
+        <div ng-repeat="c in classes">
+            <h5>{{c.className}}</h5>
+
+            <table>
+                <tr ng-repeat="f in c.fields">
+                    <td>{{f.fieldName}}</td><td>{{f.dataType}}</td>
+                </tr>
+            </table>
+
+        </div>
 
     </div>
-    <div class="col-md-9">
+    <div class="col-md-8">
         <h4>Generated code</h4>
         <textarea class="swift-code codebin" ng-model="generated" cols="50" rows="50"></textarea>
     </div>

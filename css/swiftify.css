@@ -9,3 +9,7 @@
 .vspace1 {
     margin-top: 1em;
 }
+
+h4 {
+    border-bottom: 1px solid #ccc;
+}

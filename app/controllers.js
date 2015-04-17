@@ -12,12 +12,29 @@ app.controller("JsonController", function ($scope, jsonAnalyzer) {
     $scope.simpleExample = function() {
         $scope.data.json = JSON.stringify({ name: "Tomek", id:12345, location: { lat:-19.20, lon:51.40 } });
     };
+
 });
+
+function convertClassDefinition(cls) {
+    var ret = {
+        className: cls.type
+    };
+
+    ret.fields = _.map(cls.children, function(fieldDef, fieldName) {
+        return {
+            fieldName: fieldDef.name,
+            dataType: fieldDef.type
+        }
+    });
+
+
+    return ret;
+}
 
 
 app.controller("CodeController", function ($scope, jsonAnalyzer) {
     console.log('Entered CODE page');
-
+    $scope.data.json = JSON.stringify(testFixture); // REMOVEME
 
     function buildSwiftCode() {
         var obj = JSON.parse($scope.data.json);
@@ -32,6 +49,8 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
             s += "\n\n";
         });
         $scope.generated = s;
+
+        $scope.classes = _.map(output, convertClassDefinition);
     }
     buildSwiftCode();
 
