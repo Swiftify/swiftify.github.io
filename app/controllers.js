@@ -23,7 +23,8 @@ function convertClassDefinition(cls) {
     ret.fields = _.map(cls.children, function(fieldDef, fieldName) {
         return {
             fieldName: fieldDef.name,
-            dataType: fieldDef.type
+            dataType: fieldDef.type,
+            path: fieldDef.path
         }
     });
 
@@ -34,7 +35,6 @@ function convertClassDefinition(cls) {
 
 app.controller("CodeController", function ($scope, jsonAnalyzer) {
     console.log('Entered CODE page');
-    $scope.data.json = JSON.stringify(testFixture); // REMOVEME
 
     function buildSwiftCode() {
         var obj = JSON.parse($scope.data.json);
@@ -53,22 +53,6 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
         $scope.classes = _.map(output, convertClassDefinition);
     }
     buildSwiftCode();
-
-    //$scope.$watch('data.rootClass', function(val) {
-    //    buildSwiftCode();
-    //});
-    //
-    //$scope.$watch('data.prefix', function(val) {
-    //    buildSwiftCode();
-    //});
-    //
-    //$scope.$watch('data.decodeIn', function(val) {
-    //    buildSwiftCode();
-    //});
-    //
-    //$scope.$watch('data.decodeMethodName', function(val) {
-    //    buildSwiftCode();
-    //});
 
     $scope.$watch('[data.rootClass, data.prefix, data.decodeIn, data.decodeMethodName]', function(val) {
         buildSwiftCode();

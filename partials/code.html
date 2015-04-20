@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <h4>Options</h4>
 
         <form>
@@ -24,27 +24,37 @@
                 <label>
                     <input type="radio" name="decodeWhere" id="decodeWhere2" value="method" ng-model="data.decodeIn">
                     Deserialize in custom method
-                    <input type="text" id="decodeMethod" ng-model="data.decodeMethodName" placeholder="Method name" ng-show="data.decodeIn=='method'">
+                    <input type="text" id="decodeMethod" ng-model="data.decodeMethodName" placeholder="Method name"
+                           ng-show="data.decodeIn=='method'">
                 </label>
             </div>
 
         </form>
 
-        <h4>Fine tuning</h4>
+        <h4>Generated classes</h4>
 
-        <div ng-repeat="c in classes">
-            <h5>{{c.className}}</h5>
-
-            <table>
+        <div class="panel panel-default" ng-repeat="c in classes">
+            <div class="panel-heading">
+                {{c.className}}
+            </div>
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
                 <tr ng-repeat="f in c.fields">
-                    <td>{{f.fieldName}}</td><td>{{f.dataType}}</td>
+                    <td><span>{{f.fieldName}}</span><span ng-show="false"><input type="text"></span></td>
+                    <td>{{f.dataType}}</td>
+
                 </tr>
             </table>
 
         </div>
 
     </div>
-    <div class="col-md-8">
+    <div class="col-md-7">
         <h4>Generated code</h4>
         <textarea class="swift-code codebin" ng-model="generated" cols="50" rows="50"></textarea>
     </div>

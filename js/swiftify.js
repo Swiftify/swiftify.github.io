@@ -42,10 +42,11 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         }
     }
 
-    function ScalarField(name, type) {
+    function ScalarField(name, type, path) {
         this.name = name;
         this.type = type;
         this.jsonField = name;
+        this.path = path;
     }
 
     ScalarField.prototype.swiftDeclaration = function () {
@@ -56,11 +57,13 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         return spaces() + "self." + this.name + " = " + source + '["' + this.jsonField + '"].' + typeConversion(this.type);
     };
 
-    ObjectField = function (name, value) {
+    ObjectField = function (name, value, _path) {
+        var path = _path || "/";
         this.type = config.prefix + _.capitalize(name);
         this.name = _.camelCase(name);
         this.jsonField = name;
-        this.children = this.parseChildren(value);
+        this.children = this.parseChildren(value, path);
+        this.path = path;
     };
 
     ObjectField.prototype.swiftDeclaration = function () {
@@ -82,11 +85,11 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
     };
 
 
-    function ArrayField(name, value) {
+    function ArrayField(name, value, _path) {
         this.type = null;
         this.name = _.camelCase(name);
         this.jsonField = name;
-        this.analyze(value);
+        this.analyze(value, _path);
     }
 
     function isPrimitive(value) {
@@ -111,7 +114,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         return objectValue || sourceValue || undefined;
     }
 
-    ArrayField.prototype.analyze = function (value) {
+    ArrayField.prototype.analyze = function (value, path) {
         // Corner case - empty array
         if (value.length == 0) {
             this.type = null;
@@ -135,7 +138,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         value.push(arrayMergingCustomizer);
         var specimen = _.merge.apply(this, value);
         this.type = singularize(_.capitalize(this.name));
-        var of = new ObjectField(this.type, specimen);
+        var of = new ObjectField(this.type, specimen, path);
     };
 
 
@@ -191,15 +194,16 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         }
     }
 
-    ObjectField.prototype.parseChildren = function (obj) {
+    ObjectField.prototype.parseChildren = function (obj, _path) {
         var children = {};
         _.forOwn(obj, function (value, key) {
+            var childPath = _path + "/" + key;
             if (isPrimitive(value)) {
-                children[key] = new ScalarField(key, swiftType(value));
+                children[key] = new ScalarField(key, swiftType(value), childPath);
             } else if (_.isArray(value)) {
-                children[key] = new ArrayField(key, value);
+                children[key] = new ArrayField(key, value, childPath);
             } else if (_.isObject(value)) {
-                children[key] = new ObjectField(key, value);
+                children[key] = new ObjectField(key, value, childPath);
             }
         });
         types.push(this);

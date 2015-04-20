@@ -13,3 +13,7 @@
 h4 {
     border-bottom: 1px solid #ccc;
 }
+
+.table-tight tr {
+    height: 120%;
+}
