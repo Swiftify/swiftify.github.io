@@ -32,8 +32,10 @@
         </form>
 
         <h4>Generated classes</h4>
+        <small>click on field name to edit</small>
 
         <div class="panel panel-default" ng-repeat="c in classes">
+            <a name="{{c.className}}"></a>
             <div class="panel-heading">
                 {{c.className}}
             </div>
@@ -45,7 +47,12 @@
                 </tr>
                 </thead>
                 <tr ng-repeat="f in c.fields">
-                    <td><span>{{f.fieldName}}</span><span ng-show="false"><input type="text"></span></td>
+                    <td>
+                        <span ng-click="editField(f)" ng-hide="isEdited(f)">{{f.fieldName}}</span>
+                        <span ng-show="isEdited(f)"><input type="text" ng-model="data.selected.fieldName" ng-enter="updateFieldName(f)">
+                            <button class="btn btn-xs btn-primary" ng-click="updateFieldName(f)">Save</button>
+                        </span>
+                    </td>
                     <td>{{f.dataType}}</td>
 
                 </tr>

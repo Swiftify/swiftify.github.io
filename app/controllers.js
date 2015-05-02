@@ -36,6 +36,9 @@ function convertClassDefinition(cls) {
 app.controller("CodeController", function ($scope, jsonAnalyzer) {
     console.log('Entered CODE page');
 
+    $scope.data.hints = {};
+    $scope.data.selected = {};
+
     function buildSwiftCode() {
         var obj = JSON.parse($scope.data.json);
 
@@ -58,6 +61,20 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
         buildSwiftCode();
     });
 
+    $scope.editField = function(f) {
+        console.log('Editing field ', f);
+        $scope.data.selected = angular.copy(f);
+    };
+
+    $scope.isEdited = function(f) {
+        return f.path === $scope.data.selected.path;
+    }
+
+    $scope.updateFieldName = function(f) {
+        $scope.data.hints[f.path] = { fieldName: $scope.data.selected.fieldName };
+        $scope.data.selected = {};
+        buildSwiftCode();
+    }
 
 });
 
