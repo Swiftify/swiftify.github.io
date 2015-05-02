@@ -49,6 +49,16 @@ app.directive( 'editInPlace', function() {
                 inputElement[0].focus();
             };
 
+            // End editing on ENTER
+            inputElement.bind("keydown keypress", function (event) {
+                if(event.which === 13) {
+                    var target = event.target;
+                    target.blur();
+                    event.preventDefault();
+                }
+            });
+
+
             var handler = $scope.onChange();
 
             // When we leave the input, we're done editing.
