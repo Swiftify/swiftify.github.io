@@ -50,6 +50,14 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         }
     }
 
+    function hintClassName(path) {
+        if (config.classHints[path]) {
+            return config.classHints[path].name || null;
+        } else {
+            return null;
+        }
+    }
+
     function ScalarField(name, type, path) {
         this.name = hintName(path) || name;
         this.type = type;
@@ -67,7 +75,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
 
     ObjectField = function (name, value, _path) {
         var path = _path || "/";
-        this.type = config.prefix + _.capitalize(name);
+        this.type = config.prefix + (hintClassName(path) || _.capitalize(name));
         this.name = hintName(path) || _.camelCase(name);
         this.jsonField = name;
         this.children = this.parseChildren(value, path);

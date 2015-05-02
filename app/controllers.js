@@ -17,7 +17,8 @@ app.controller("JsonController", function ($scope, jsonAnalyzer) {
 
 function convertClassDefinition(cls) {
     var ret = {
-        className: cls.type
+        className: cls.type,
+        path: cls.path
     };
 
     ret.fields = _.map(cls.children, function(fieldDef, fieldName) {
@@ -37,6 +38,7 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
     console.log('Entered CODE page');
 
     $scope.data.hints = {};
+    $scope.data.classHints = {};
     $scope.data.selected = {};
 
     function buildSwiftCode() {
@@ -55,6 +57,7 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
 
         $scope.classes = _.map(output, convertClassDefinition);
     }
+
     buildSwiftCode();
 
     $scope.$watch('[data.rootClass, data.prefix, data.decodeIn, data.decodeMethodName]', function(val) {
@@ -74,6 +77,15 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
         $scope.data.hints[f.path] = { fieldName: $scope.data.selected.fieldName };
         $scope.data.selected = {};
         buildSwiftCode();
+    }
+
+    $scope.addClassHint = function(c) {
+        $scope.data.classHints[c.path] = { name: c.className };
+        if (c.path === '/') {
+            $scope.data.rootClass = c.className;
+        }
+        buildSwiftCode();
+        $scope.$apply();
     }
 
 });

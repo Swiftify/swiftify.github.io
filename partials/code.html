@@ -35,9 +35,9 @@
         <small>click on field name to edit</small>
 
         <div class="panel panel-default" ng-repeat="c in classes">
-            <a name="{{c.className}}"></a>
+            <a name="class_{{c.className}}"></a>
             <div class="panel-heading">
-                {{c.className}}
+                <edit-in-place value="c.className" on-change="addClassHint" subject="c"></edit-in-place>
             </div>
             <table class="table table-condensed">
                 <thead>
