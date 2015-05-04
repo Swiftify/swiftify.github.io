@@ -17,21 +17,18 @@
     app, whose development has, sadly, stopped.</p>
 <p>Swiftify is single-page web application written in JavaScript using <a href="http://angularjs.org">AngularJS</a> toolkit. It runs here, in your browser.</p>
 
-<p>Initialize objects with <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a>'s <code>JSON</code> object.
-</p>
 
 <h2>Features</h2>
 
 <ul>
+    <li>Uses <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a> for reading JSON as safe bet. Other parsers may be
+        supported in future.</li>
     <li>Generates classes for nested objects.</li>
     <li>Infer numeric data type from example, <code>Double</code> or <code>Int</code>, depending on number has
-        fractional part, or not.
-    </li>
+        fractional part, or not.</li>
     <li>Generates type-safe Swift arrays of nested objects or primitive types.</li>
-    <li>Uses <a href="https://github.com/SwiftyJSON/SwiftyJSON">SwiftyJSON</a> for reading JSON. Other parsers may be
-        supported in future.
-    </li>
     <li>Objects are deserialized in <code>init(json: JSON)</code> initializer or custom function named by user.</li>
+    <li>Generated field and class names can be changed to your convenience.</li>
 </ul>
 
 <h2>Usage</h2>
@@ -44,7 +41,7 @@
 <h2>TODOs</h2>
 <ul>
     <li>Support array as top level JSON object.</li>
-    <li>Customize mapping during generation.</li>
+    <li>Customize mapping during generation: use struct, manually select Int or Double type.</li>
     <li>Prevent from using Swift reserved words as identifiers.</li>
     <li>Add function to generate JSON from object.</li>
 </ul>
@@ -54,8 +51,12 @@
 <p>Swiftify was conceived and developed by <a href="https://twitter.com/tomekcejner">Tomek Cejner</a>, mobile developer,
     hacker, maker and father.</p>
 
+<p>Follow me on Twitter as <a href="http://twitter.com/tomekcejner">@tomekcejner</a></p>
+
 <p>Any ideas and contributions are welcome. Feel free to <a href="https://github.com/Swiftify/swiftify.github.io">fork
     me on GitHub</a>.</p>
 
+<h3>Fine print</h3>
+<p>Swiftify comes with no warranty whatsoever. Use it at your own risk.</p>
 </body>
 </html>
