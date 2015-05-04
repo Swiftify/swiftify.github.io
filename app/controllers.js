@@ -5,12 +5,31 @@
 app.controller("JsonController", function ($scope, jsonAnalyzer) {
     console.log('Entered JSON page');
 
-    $scope.example = function() {
-        $scope.data.json = JSON.stringify(testFixture);
+    $scope.example = function () {
+        $scope.data.json = JSON.stringify(testFixture, null, 2);
     };
 
-    $scope.simpleExample = function() {
-        $scope.data.json = JSON.stringify({ name: "Tomek", id:12345, location: { lat:-19.20, lon:51.40 } });
+
+    $scope.simpleExample = function () {
+        var miniFixture = {
+            name: "Tomek",
+            id: 12345,
+            location: {lat: -19.20, lon: 51.40},
+            roles: ['USER', 'TECHNICAL'],
+            cars: [
+                {
+                    make: 'Citroen',
+                    model: 'C4',
+                    year: 2009
+                },
+                {
+                    make: 'Volvo',
+                    model: 'V40',
+                    year: 2002
+                }
+            ]
+        };
+        $scope.data.json = JSON.stringify(miniFixture, null, 2);
     };
 
 });
@@ -21,7 +40,7 @@ function convertClassDefinition(cls) {
         path: cls.path
     };
 
-    ret.fields = _.map(cls.children, function(fieldDef, fieldName) {
+    ret.fields = _.map(cls.children, function (fieldDef, fieldName) {
         return {
             fieldName: fieldDef.name,
             dataType: fieldDef.type,
@@ -60,36 +79,41 @@ app.controller("CodeController", function ($scope, jsonAnalyzer) {
 
     buildSwiftCode();
 
-    $scope.$watch('[data.rootClass, data.prefix, data.decodeIn, data.decodeMethodName]', function(val) {
+    $scope.$watch('[data.rootClass, data.prefix, data.decodeIn, data.decodeMethodName]', function (val) {
         buildSwiftCode();
     });
 
-    $scope.editField = function(f) {
+    $scope.editField = function (f) {
         console.log('Editing field ', f);
         $scope.data.selected = angular.copy(f);
     };
 
-    $scope.isEdited = function(f) {
+    $scope.isEdited = function (f) {
         return f.path === $scope.data.selected.path;
-    }
+    };
 
-    $scope.updateFieldName = function(f) {
-        $scope.data.hints[f.path] = { fieldName: $scope.data.selected.fieldName };
+    $scope.updateFieldName = function (f) {
+        $scope.data.hints[f.path] = {fieldName: $scope.data.selected.fieldName};
         $scope.data.selected = {};
         buildSwiftCode();
-    }
+    };
 
-    $scope.addClassHint = function(c) {
-        $scope.data.classHints[c.path] = { name: c.className };
+    $scope.addClassHint = function (c) {
+        $scope.data.classHints[c.path] = {name: c.className};
         if (c.path === '/') {
             $scope.data.rootClass = c.className;
         }
         buildSwiftCode();
         $scope.$apply();
-    }
+    };
+
+    $scope.addFieldHint = function (f) {
+        $scope.data.hints[f.path] = {fieldName: f.fieldName};
+        buildSwiftCode();
+        $scope.$apply();
+    };
 
 });
-
 
 
 app.controller("SwiftController", function ($scope, jsonAnalyzer) {

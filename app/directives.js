@@ -25,7 +25,7 @@ app.directive( 'editInPlace', function() {
             onChange: '&onChange',
             subject: '='
         },
-        template: '<span ng-click="edit()" ng-bind="value"></span><input ng-model="value"></input>',
+        template: '<span ng-click="edit()" ng-bind="value"></span><input ng-model="value"/>',
         link: function ( $scope, element, attrs ) {
             // Let's get a reference to the input element, as we'll want to reference it.
             var inputElement = angular.element( element.children()[1] );

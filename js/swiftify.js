@@ -105,6 +105,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         this.type = null;
         this.name = hintName(_path) || _.camelCase(name);
         this.jsonField = name;
+        this.path = _path;
         this.analyze(value, _path);
     }
 
@@ -153,7 +154,7 @@ JsonAnalyzer.prototype.parse = function (obj, config) {
         // Array of objects.
         value.push(arrayMergingCustomizer);
         var specimen = _.merge.apply(this, value);
-        this.type = singularize(_.capitalize(this.name));
+        this.type = hintClassName(this.path) || singularize(_.capitalize(this.name));
         var of = new ObjectField(this.type, specimen, path);
     };
 
